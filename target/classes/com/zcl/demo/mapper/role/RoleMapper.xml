@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.zcl.demo.dao.role.RoleDao">
+
+    <select id="queryAllRole" resultType="com.zcl.demo.model.role.Role">
+        select *
+        from t_role
+    </select>
+
+    <select id="queryRoleByUid" resultType="com.zcl.demo.model.role.Role">
+        select t2.*
+        from t_user t1
+                 inner join t_role t2
+                            on t1.r_id = t2.r_id
+        where t1.u_id = #{uId}
+    </select>
+
+    <select id="queryRoleByRname" resultType="com.zcl.demo.model.role.Role">
+        select *
+        from t_role
+        where r_name like "%"#{rName}"%"
+    </select>
+
+    <select id="queryRoleByAllName" resultType="com.zcl.demo.model.role.Role">
+        select *
+        from t_role
+        where r_name = #{rName}
+    </select>
+
+    <select id="queryRoleByCreateTime" resultType="com.zcl.demo.model.role.Role">
+        select *
+        from t_role
+        where create_time like #{createTime}"%"
+    </select>
+
+    <select id="queryRoleByRnameAndTime" resultType="com.zcl.demo.model.role.Role">
+        select *
+        from t_role
+        where r_name like "%"#{rName}"%" and create_time like #{createTime}"%"
+    </select>
+
+    <insert id="addRole" parameterType="com.zcl.demo.model.role.Role">
+        <selectKey keyProperty="rId" resultType="java.lang.String" order="BEFORE">
+            select REPLACE(UUID(),'-','')
+        </selectKey>
+        insert into t_role(r_id,r_name,r_desc,create_time,create_user) values
+        (#{rId},#{rName},#{rDesc},#{createTime},#{createUser})
+    </insert>
+
+    <select id="queryRoleByRid" parameterType="java.lang.String" resultType="com.zcl.demo.model.role.Role">
+        select *
+        from t_role
+        where r_id = #{rId}
+    </select>
+    <update id="modifyRole" parameterType="com.zcl.demo.model.role.Role">
+        update t_role
+        set r_name=#{rName},
+            r_desc=#{rDesc},
+            update_time=#{updateTime}
+        where r_id = #{rId}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.String">
+        delete from t_role where r_id=#{rId}
+    </delete>
+</mapper>

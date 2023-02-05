@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.zcl.demo.dao.notice.NoticeDao">
+    <insert id="save" parameterType="com.zcl.demo.model.notice.Notice">
+        insert into t_notice
+        values (#{nId}, #{sendMan}, #{reciveMan}, #{eId}, #{isReaded}, #{createTime})
+    </insert>
+    <select id="queryNoticeNumByUid" resultType="java.lang.Integer">
+        select count(1)
+        from t_notice
+        where recive_man = #{getuId}
+          and is_readed = '0'
+    </select>
+    <update id="updateNoticeReaded">
+        update t_notice
+        set is_readed='1'
+        where e_id = #{eId}
+    </update>
+    <update id="allEmailReaded">
+        update t_notice
+        set is_readed='1'
+        where recive_man = #{userId}
+    </update>
+
+    <delete id="suchDelete">
+        delete from t_notice
+        where e_id in
+        <foreach collection="eId" open="(" close=")" separator="," item="value">
+            #{value}
+        </foreach>
+    </delete>
+
+    <insert id="saveMqNoteBack" parameterType="com.zcl.demo.model.mq.MqNoticeBack">
+        insert into mq_notice_back
+        values (#{mqNid}, #{mqNoteId}, #{noteType}, #{status}, #{handleTime})
+    </insert>
+    <insert id="saveEmailCopy" parameterType="com.zcl.demo.vo.email.EmailCpVoCopy">
+        <selectKey keyProperty="eNid" resultType="java.lang.String" order="BEFORE">
+            select REPLACE(UUID(),'-','')
+        </selectKey>
+        insert into t_eamil_copy values (#{eNid},#{mqNid},#{userId},#{reciveMan},#{eTopic},#{eContent},#{nId})
+    </insert>
+    <select id="checkNidExist" resultType="java.lang.String">
+        select status from mq_notice_back where mq_note_id =#{nId}
+    </select>
+</mapper>

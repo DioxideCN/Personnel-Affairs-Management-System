@@ -1,0 +1,10 @@
+{
+    "configurations": [
+        {
+            "type": "spring-boot",
+            "name": "role-manage",
+            "mainClass": "DemoApplication",
+            "module": "demo",
+        },
+    ]
+}

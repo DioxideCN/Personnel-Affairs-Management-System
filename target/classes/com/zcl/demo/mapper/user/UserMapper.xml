@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.zcl.demo.dao.user.UserDao">
+    <select id="queryUser" resultType="com.zcl.demo.model.user.User">
+        SELECT *
+        FROM t_user
+        WHERE u_name = #{uName}
+          AND password = #{password}
+          and status = '0'
+    </select>
+
+    <insert id="addUser" parameterType="com.zcl.demo.model.user.User">
+        <selectKey keyProperty="uId" resultType="java.lang.String" order="BEFORE">
+            select REPLACE(UUID(),'-','')
+        </selectKey>
+        INSERT INTO t_user VALUES (#{uId},#{uName},#{password},#{rId},#{createTime},#{updateTime},
+        #{sex},#{phone},#{email},#{status})
+    </insert>
+
+    <select id="queryAll" resultType="com.zcl.demo.model.user.User">
+        SELECT *
+        FROM t_user
+        where status = '0'
+        order by create_time desc, u_name
+    </select>
+
+    <select id="queryUserById" resultType="com.zcl.demo.model.user.User">
+        select *
+        from t_user
+        where u_id = #{uId}
+          and status = '0'
+    </select>
+
+    <select id="queryUserByName" resultType="com.zcl.demo.model.user.User">
+        SELECT *
+        FROM t_user
+        WHERE u_name like "%"#{uName}"%"  and status ='0'
+        order by create_time desc, u_name
+    </select>
+
+    <select id="queryUserByAllName" resultType="com.zcl.demo.model.user.User">
+        SELECT *
+        FROM t_user
+        WHERE u_name = #{uName}
+          and status = '0'
+    </select>
+
+    <update id="updateById" parameterType="com.zcl.demo.model.user.User">
+        update t_user
+        set u_name= #{uName},
+            r_id=#{rId},
+            sex=#{sex},
+            phone=#{phone},
+            email=#{email},
+            update_time=#{updateTime}
+        where u_id = #{uId}
+    </update>
+
+    <update id="deleteUserById" parameterType="java.lang.String">
+        update t_user set status = '1' where u_id in
+        <foreach collection="ids" open="(" close=")" separator="," item="value">
+            #{value}
+        </foreach>
+    </update>
+
+    <update id="reloadPw" parameterType="java.lang.String">
+        update t_user
+        set password='lueSGJZetyySpUndWjMBEg=='
+        where u_id = #{uId}
+    </update>
+
+    <select id="queryAllUser" resultType="com.zcl.demo.model.user.User">
+        select * from t_user
+    </select>
+
+</mapper>

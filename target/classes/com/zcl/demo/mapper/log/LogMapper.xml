@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.zcl.demo.dao.log.LogDao">
+
+    <select id="queryAll" resultType="com.zcl.demo.model.log.Log">
+        select create_time, user_name, action
+        from log_info
+        where action in ('登录', '注销')
+        order by create_time desc
+    </select>
+
+    <insert id="addLog" parameterType="com.zcl.demo.model.log.Log">
+        <selectKey keyProperty="id" resultType="java.lang.String" order="BEFORE">
+            select REPLACE(UUID(),'-','')
+        </selectKey>
+        insert into log_info(id,create_time,user_name,action) values (#{id},#{createTime},#{userName},#{action})
+    </insert>
+
+    <select id="queryByName" resultType="com.zcl.demo.model.log.Log">
+        select create_time, user_name, action
+        from log_info
+        where user_name like "%"#{userName}"%"
+          and action in ('登录'
+            , '注销')
+        order by create_time desc
+    </select>
+    <select id="queryByDate" resultType="com.zcl.demo.model.log.Log">
+        select create_time, user_name, action
+        from log_info
+        where create_time like "%"#{createTime}"%"
+          and action in ('登录'
+            , '注销')
+        order by create_time desc
+    </select>
+    <select id="queryByNameAndDate" resultType="com.zcl.demo.model.log.Log">
+        select create_time, user_name, action
+        from log_info
+        where user_name like "%"#{userName}"%"
+          and action in ('登录'
+            , '注销')
+          and create_time like "%"#{createTime}"%"
+        order by create_time desc
+    </select>
+
+    <select id="statisNowDayPnum" resultType="java.lang.String">
+        SELECT count(1)
+        FROM log_info
+        where action = '登录'
+          and substring(create_time
+            , 1
+            , 8)=#{nowDate}
+    </select>
+
+    <select id="funLogQuery" resultType="com.zcl.demo.model.log.Log">
+        SELECT create_time, user_name, action
+        FROM log_info
+        <where>
+            action not in ('登录', '注销')
+            <if test="userName!=null and userName!=''">
+                and user_name like "%"#{userName}"%"
+            </if>
+            <if test="createTime!=null and createTime!=''">
+                and substring(create_time
+                , 1
+                , 8)=#{createTime}
+            </if>
+
+        </where>
+        order by create_time desc
+
+    </select>
+
+
+</mapper>

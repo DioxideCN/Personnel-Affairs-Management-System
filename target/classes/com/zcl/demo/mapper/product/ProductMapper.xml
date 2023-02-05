@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.zcl.demo.dao.product.ProductDao">
+    <select id="queryAll" resultType="com.zcl.demo.model.product.Product">
+        select *
+        from t_product
+        order by p_id, p_name
+    </select>
+    <select id="queryPnameByPid" resultType="java.lang.String">
+        select p_name
+        from t_product
+        where p_id = #{pId}
+    </select>
+
+    <select id="queryProductByName" resultType="com.zcl.demo.model.product.Product">
+        select *
+        from t_product
+        where p_name like "%"#{pName}"%"
+        order by p_id, p_name
+    </select>
+    <select id="querySalePrcByPid" resultType="com.zcl.demo.po.SalePo">
+        select jan_sale_num,
+               feb_sale_num,
+               mar_sale_num,
+               apr_sale_num,
+               may_sale_num,
+               jun_sale_num,
+               jul_sale_num,
+               aug_sale_num,
+               sep_sale_num,
+               oct_sale_num,
+               nov_sale_num,
+               dec_sale_num
+        from t_product t1
+                 join t_sale t2
+                      on t1.s_id = t2.s_id
+        where t1.p_id = #{pId}
+    </select>
+
+    <select id="queryPrdNumByPid" resultType="com.zcl.demo.po.ProducePo">
+        select jan_prd_num,
+               feb_prd_num,
+               mar_prd_num,
+               apr_prd_num,
+               may_prd_num,
+               jun_prd_num,
+               jul_prd_num,
+               aug_prd_num,
+               sep_prd_num,
+               oct_prd_num,
+               nov_prd_num,
+               dec_prd_num
+        from t_product t1
+                 join t_produce_num t2
+                      on t1.pn_id = t2.pn_id
+        where t1.p_id = #{pId}
+    </select>
+
+    <select id="queryProductByPid" resultType="com.zcl.demo.model.product.Product">
+        select *
+        from t_product
+        where p_id like "%"#{pId}"%"
+        order by p_id, p_name
+    </select>
+    <select id="queryProByNameAndId" resultType="com.zcl.demo.model.product.Product">
+        select *
+        from t_product
+        where p_id like "%"#{pId}"%" and p_name like "%"#{pName}"%"
+        order by p_id, p_name
+    </select>
+
+
+    <select id="querySaleByName" resultType="com.zcl.demo.vo.product.SaleVo">
+        select t1.p_name, t1.p_id, t2.*
+        from t_product t1
+                 join t_sale t2
+                      on t1.s_id = t2.s_id
+        where t1.p_name like "%"#{pName}"%"
+    </select>
+
+    <select id="queryAllSale" resultType="com.zcl.demo.vo.product.SaleVo">
+        select t1.p_name, t1.p_id, t2.*
+        from t_product t1
+                 join t_sale t2
+                      on t1.s_id = t2.s_id
+    </select>
+
+    <select id="queryAllProduce" resultType="com.zcl.demo.vo.product.ProduceVO">
+        select t1.p_id, t1.p_name, t2.*
+        from t_product t1
+                 join t_produce_num t2
+                      on t1.pn_id = t2.pn_id
+    </select>
+
+    <select id="queryPrdNumByName" resultType="com.zcl.demo.vo.product.ProduceVO">
+        select t1.p_id, t1.p_name, t2.*
+        from t_product t1
+                 join t_produce_num t2
+                      on t1.pn_id = t2.pn_id
+        where t1.p_name like "%"#{pName}"%"
+    </select>
+
+    <insert id="addProduct">
+        insert into t_product(p_id, p_name, p_money)
+        values (#{pId}, #{pName}, #{pMoney})
+    </insert>
+
+    <update id="updateProduct"  parameterType="com.zcl.demo.model.product.Product">
+        update t_product
+        set p_name=#{pName},
+            p_money=#{pMoney}
+        where p_id = #{pId}
+    </update>
+    <select id="queryProductById" resultType="com.zcl.demo.model.product.Product">
+        select *
+        from t_product
+        where p_id = #{p_id}
+    </select>
+
+    <delete id="deleteProductById" parameterType="java.lang.String">
+        delete from t_product where p_id in
+        <foreach collection="pIds" open="(" close=")" separator="," item="value">
+            #{value}
+        </foreach>
+    </delete>
+</mapper>

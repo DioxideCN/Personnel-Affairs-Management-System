@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.zcl.demo.dao.menu.MenuDao">
+    <select id="queryAll" resultType="com.zcl.demo.model.menu.Menu">
+        SELECT *
+        FROM t_menu
+        where is_navigtion = '0'
+        order by m_sort, m_name
+    </select>
+    <select id="queryNodeNameById" resultType="java.lang.String">
+        select m_name
+        from t_menu
+        where m_id = #{treeId}
+          and is_navigtion = '0'
+
+    </select>
+
+    <insert id="addUrl" parameterType="com.zcl.demo.model.menu.Menu">
+        <selectKey keyProperty="mId" resultType="java.lang.String" order="BEFORE">
+            select REPLACE(UUID(),'-','')
+        </selectKey>
+        insert into t_menu values (#{mId},#{mName},#{pMenu},#{isNavigtion},#{mUrl},
+        #{mIcon},#{mSort},#{mDesc},#{createUser},#{createTime},#{updateUser},#{updateTime})
+    </insert>
+
+    <update id="removeUrl" parameterType="java.lang.String">
+        update
+            t_menu
+        set is_navigtion ='1'
+        where m_id = #{mId}
+    </update>
+
+    <select id="selectMenuByMid" resultType="com.zcl.demo.model.menu.Menu">
+        SELECT *
+        FROM t_menu
+        where m_id = #{mId}
+
+
+        order by m_sort, m_name
+    </select>
+
+    <update id="updateUrl" parameterType="com.zcl.demo.model.menu.Menu">
+        update t_menu
+        set m_name=#{mName},
+            m_url=#{mUrl},
+            m_icon=#{mIcon},
+            m_sort=#{mSort},
+            m_desc=#{mDesc},
+            is_navigtion=#{isNavigtion},
+            update_user=#{updateUser},
+            update_time=#{updateTime}
+        where m_id = #{mId}
+    </update>
+
+    <select id="queryBindMenuByRid" resultType="com.zcl.demo.model.menu.Menu">
+        select m.*
+        from t_role r
+                 join t_user_role ur
+                      on r.r_id = ur.r_id
+                 join t_menu m
+                      on ur.m_id = m.m_id
+        where r.r_id = #{rId}
+          and is_navigtion = '0'
+        order by m.m_sort, m.m_name
+    </select>
+    <delete id="deleteBindMenvosByRid" parameterType="java.lang.String">
+        delete
+        from t_user_role
+        where r_id = #{rId}
+    </delete>
+
+    <insert id="insertBindMenvo" parameterType="java.lang.String">
+        <selectKey keyProperty="rmId" resultType="java.lang.String" order="BEFORE">
+            select REPLACE(UUID(),'-','')
+        </selectKey>
+        INSERT INTO t_user_role (rm_id, r_id, m_id)
+        VALUES (#{rmId}, #{rId}, #{mId});
+    </insert>
+
+    <delete id="removeBindUrl" parameterType="java.lang.String">
+        delete
+        from t_user_role
+        where m_id = #{mId}
+    </delete>
+</mapper>
